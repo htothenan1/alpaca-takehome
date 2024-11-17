@@ -6,14 +6,14 @@
 
 ```bash
 # Create and activate virtual environment
-python -m venv venv
-source venv/bin/activate  # or `venv\Scripts\activate` on Windows
+python -m venv alpaca_venv
+source alpaca_venv/bin/activate  # or `venv\Scripts\activate` on Windows
 
 # Install dependencies
 pip install -r requirements.txt
 
 # Start the server
-uvicorn app.main:app --reload --port 8000
+fastapi dev main.py
 ```
 
 ### Frontend Setup (Node.js 18+ required)
