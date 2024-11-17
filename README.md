@@ -1,4 +1,4 @@
-# Autism Care Platform Take-Home Project
+# Alpaca Health Software Engineering Take-Home Project
 
 ## Setup Instructions
 
