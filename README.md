@@ -71,11 +71,13 @@ The application will be available at:
 
 Here's the refined criteria with more professionally-worded details:
 
+Here's the criteria formatted as a markdown table:
+
 | Category | Details | Weight |
 |----------|---------|--------|
-| Product Design & Scope Management | - Solution effectively addresses core requirements and business objectives<br>- Demonstrates strategic prioritization of features based on impact and constraints<br>- Clear rationale for scope decisions | 10% |
-| Technical Architecture | - Architecture and technology choices align with project requirements<br>- Demonstrates understanding of trade-offs in technical decisions<br>- Selected tools support scalability and maintainability | 10% |
-| Implementation Quality | - Clear and maintainable code architecture<br>- Effective component modularity and reusability<br>- Proper implementation of React patterns and best practices<br>- Efficient state management solutions<br>- Appropriate use of lifecycle methods and hooks<br>- Adherence to React ecosystem conventions | 40% |
-| User Experience & Reliability | - Intuitive and responsive user interface<br>- Consistent error handling and edge case management<br>- Performance optimization<br>- Browser compatibility<br>- Accessibility considerations | 20% |
-| Technical Documentation | - Comprehensive system architecture documentation<br>- Clear setup and deployment instructions<br>- Well-documented technical decisions and trade-offs<br>- API documentation where applicable | 10% |
-| Quality Assurance | - Comprehensive test coverage<br>- Mix of unit, integration, and E2E tests where appropriate<br>- Test scenarios cover critical user flows<br>- Proper test organization and maintainability | 10% |
+| Product sense and scoping | - Final product decisions alignment with requirements<br>- Appropriate deprioritization of non-crucial parts | 10% |
+| Technology selection | - Right tools chosen for the job | 10% |
+| Technical Level | - Well-organized and intuitive code structure<br>- Modular code (e.g., React components used)<br>- Proper use of React hooks<br>- Good state management<br>- Correct use of useEffect hooks | 40% |
+| Craft and Quality | - Usable and intuitive UI/UX<br>- Presence and severity of bugs | 20% |
+| Documentation | - Clear communication of logic and technical decisions in README | 10% |
+| Testing | - Presence of tests<br>- Quality and robustness of tests | 10% |
