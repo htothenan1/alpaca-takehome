@@ -54,11 +54,6 @@ The application will be available at:
 - Backend runs on port 8000 with auto-reload enabled
 - API documentation available at http://localhost:8000/docs
 
-## Requirements
-
-Implement the following features:
-[Your specific requirements here]
-
 ## Submission
 
 1. Create a private GitHub repository
@@ -74,9 +69,13 @@ Implement the following features:
 
 ## Evaluation Criteria
 
-- Code quality and organization
-- API design
-- Frontend implementation
-- Error handling
-- Documentation
-- Testing approach
+Here's the refined criteria with more professionally-worded details:
+
+| Category | Details | Weight |
+|----------|---------|--------|
+| Product Design & Scope Management | - Solution effectively addresses core requirements and business objectives<br>- Demonstrates strategic prioritization of features based on impact and constraints<br>- Clear rationale for scope decisions | 10% |
+| Technical Architecture | - Architecture and technology choices align with project requirements<br>- Demonstrates understanding of trade-offs in technical decisions<br>- Selected tools support scalability and maintainability | 10% |
+| Implementation Quality | - Clear and maintainable code architecture<br>- Effective component modularity and reusability<br>- Proper implementation of React patterns and best practices<br>- Efficient state management solutions<br>- Appropriate use of lifecycle methods and hooks<br>- Adherence to React ecosystem conventions | 40% |
+| User Experience & Reliability | - Intuitive and responsive user interface<br>- Consistent error handling and edge case management<br>- Performance optimization<br>- Browser compatibility<br>- Accessibility considerations | 20% |
+| Technical Documentation | - Comprehensive system architecture documentation<br>- Clear setup and deployment instructions<br>- Well-documented technical decisions and trade-offs<br>- API documentation where applicable | 10% |
+| Quality Assurance | - Comprehensive test coverage<br>- Mix of unit, integration, and E2E tests where appropriate<br>- Test scenarios cover critical user flows<br>- Proper test organization and maintainability | 10% |
