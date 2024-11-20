@@ -69,10 +69,6 @@ The application will be available at:
 
 ## Evaluation Criteria
 
-Here's the refined criteria with more professionally-worded details:
-
-Here's the criteria formatted as a markdown table:
-
 | Category | Details | Weight |
 |----------|---------|--------|
 | Product sense and scoping | - Final product decisions alignment with requirements<br>- Appropriate deprioritization of non-crucial parts | 10% |
