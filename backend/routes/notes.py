@@ -3,6 +3,8 @@ from models.note import Note
 from db import notes_collection
 from bson import ObjectId
 from datetime import datetime
+from services.openai_service import enhance_note_content
+
 
 router = APIRouter()
 
@@ -73,3 +75,25 @@ async def delete_note(note_id: str):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Note not found")
     return {"message": "Note deleted successfully"}
+
+# Route to enhance a note using OpenAI
+@router.post("/notes/{note_id}/enhance")
+async def enhance_note(note_id: str):
+    # Fetch the note from the database
+    note = await notes_collection.find_one({"_id": ObjectId(note_id)})
+    if not note:
+        raise HTTPException(status_code=404, detail="Note not found")
+
+    try:
+        # Call OpenAI to enhance the note content
+        enhanced_content = await enhance_note_content(note["content"])
+        # Update the note with the enhanced content
+        result = await notes_collection.update_one(
+            {"_id": ObjectId(note_id)},
+            {"$set": {"content": enhanced_content, "updated_at": datetime.utcnow()}}
+        )
+        if result.modified_count == 0:
+            raise HTTPException(status_code=500, detail="Failed to update note")
+        return {"message": "Note enhanced successfully", "enhanced_content": enhanced_content}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

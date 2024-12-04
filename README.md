@@ -69,11 +69,20 @@ The application will be available at:
 
 ## Evaluation Criteria
 
-| Category | Details | Weight |
-|----------|---------|--------|
-| Product sense and scoping | - Final product decisions alignment with requirements<br>- Appropriate deprioritization of non-crucial parts | 10% |
-| Technology selection | - Right tools chosen for the job | 10% |
-| Technical Level | - Well-organized and intuitive code structure<br>- Modular code (e.g., React components used)<br>- Proper use of React hooks<br>- Good state management<br>- Correct use of useEffect hooks | 40% |
-| Craft and Quality | - Usable and intuitive UI/UX<br>- Presence and severity of bugs | 20% |
-| Documentation | - Clear communication of logic and technical decisions in README | 10% |
-| Testing | - Presence of tests<br>- Quality and robustness of tests | 10% |
+| Category                  | Details                                                                                                                                                                                     | Weight |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| Product sense and scoping | - Final product decisions alignment with requirements<br>- Appropriate deprioritization of non-crucial parts                                                                                | 10%    |
+| Technology selection      | - Right tools chosen for the job                                                                                                                                                            | 10%    |
+| Technical Level           | - Well-organized and intuitive code structure<br>- Modular code (e.g., React components used)<br>- Proper use of React hooks<br>- Good state management<br>- Correct use of useEffect hooks | 40%    |
+| Craft and Quality         | - Usable and intuitive UI/UX<br>- Presence and severity of bugs                                                                                                                             | 20%    |
+| Documentation             | - Clear communication of logic and technical decisions in README                                                                                                                            | 10%    |
+| Testing                   | - Presence of tests<br>- Quality and robustness of tests                                                                                                                                    | 10%    |
+
+    - Approach and challenge
+    It was a simple process with simple logic. In the immediate future, I would like to add a function that allows you to scan a photo of notes, even handwritten, and do the same AI cleaning.
+    - Design decisions
+    I decided to use a mongoDB database and motor to integrate with FastAPI. From there, it was just about creating a full CRUD app, that allows users to create, update, delete notes. From there, it was just about integrating what I already know about gpt api usage
+    - Assumptions
+    I couldn't have done this without chatGPT for both boilerplate, and helping with python and fastapi, which i have less experience with. It allowed me to focus
+    - Sources
+    only chatgpt

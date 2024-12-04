@@ -11,13 +11,6 @@ type Note = {
   updated_at?: string
 }
 
-// Define SpeechRecognition for TypeScript
-type SpeechRecognition =
-  | (typeof window & {
-      webkitSpeechRecognition: any
-    })["webkitSpeechRecognition"]
-  | null
-
 export default function Home() {
   const [notes, setNotes] = useState<Note[]>([])
   const [loading, setLoading] = useState<boolean>(true)
@@ -29,9 +22,6 @@ export default function Home() {
   const [editContent, setEditContent] = useState<string>("")
   const [noteToDelete, setNoteToDelete] = useState<Note | null>(null)
   const [showAddNoteModal, setShowAddNoteModal] = useState<boolean>(false)
-  const [isRecording, setIsRecording] = useState<boolean>(false)
-
-  let recognition: SpeechRecognition | null = null
 
   // Fetch notes from the backend
   const fetchNotes = async () => {
@@ -101,6 +91,27 @@ export default function Home() {
     }
   }
 
+  // Function to handle enhancing content with AI
+  const enhanceContentWithAI = async (id: string) => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/notes/${id}/enhance`,
+        {
+          method: "POST",
+        }
+      )
+      if (!response.ok) {
+        throw new Error("Failed to enhance note content with AI")
+      }
+      const { enhanced_content } = await response.json()
+      setEditContent(enhanced_content)
+    } catch (err: unknown) {
+      setError(
+        (err as Error).message || "Unknown error occurred during AI enhancement"
+      )
+    }
+  }
+
   // Function to handle deleting a note
   const handleDeleteNote = async (id: string) => {
     try {
@@ -117,140 +128,106 @@ export default function Home() {
     }
   }
 
-  // Start voice recording for note content
-  const startRecording = () => {
-    if (!("webkitSpeechRecognition" in window)) {
-      setError("Speech recognition is not supported in your browser.")
-      return
-    }
-
-    recognition = new (window as any).webkitSpeechRecognition()
-    recognition.continuous = false
-    recognition.interimResults = false
-    recognition.lang = "en-US"
-
-    recognition.onstart = () => {
-      setIsRecording(true)
-    }
-
-    recognition.onerror = (event: any) => {
-      setError(event.error || "An error occurred during speech recognition.")
-      setIsRecording(false)
-    }
-
-    recognition.onend = () => {
-      setIsRecording(false)
-    }
-
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      const transcript = event.results[0][0].transcript
-      setNewNoteContent((prevContent) => `${prevContent} ${transcript}`)
-    }
-
-    recognition.start()
-  }
-
-  // Stop voice recording
-  const stopRecording = () => {
-    if (recognition) {
-      recognition.stop()
-    }
-    setIsRecording(false)
-  }
-
   // Fetch notes on component mount
   useEffect(() => {
     fetchNotes()
   }, [])
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-8 p-8 text-center">
-      <div className="flex items-center justify-between w-full max-w-4xl">
-        <div className="flex items-center gap-2">
-          <span role="img" aria-label="Notes Icon" className="text-3xl">
-            📝
-          </span>
-          <h1 className="text-3xl font-bold">My Notes</h1>
-        </div>
+    <div className="flex min-h-screen flex-col items-center bg-gray-50 text-gray-800 p-6">
+      <header className="w-full max-w-4xl bg-teal-500 rounded-lg p-4 text-white shadow-lg mb-4 flex items-center justify-between">
+        <h1 className="text-xl font-bold">Alpaca Health Notes</h1>
         <button
           onClick={() => setShowAddNoteModal(true)}
-          className="flex items-center gap-2 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+          className="px-4 py-2 bg-white text-teal-500 font-medium rounded-md shadow hover:bg-teal-100"
         >
           ➕ Add New Note
         </button>
-      </div>
+      </header>
 
-      {loading && <p>Loading...</p>}
-      {error && <p className="text-red-500">{error}</p>}
-
-      <div className="space-y-4 w-full max-w-4xl">
-        {notes.map((note) => (
-          <div
-            key={note.id}
-            className="relative rounded-md border p-4 shadow-sm hover:shadow-lg"
-          >
-            {editingNoteId === note.id ? (
-              <>
-                <input
-                  type="text"
-                  value={editTitle}
-                  onChange={(e) => setEditTitle(e.target.value)}
-                  className="mb-2 w-full border p-2 text-black"
-                />
-                <textarea
-                  value={editContent}
-                  onChange={(e) => setEditContent(e.target.value)}
-                  className="mb-2 w-full border p-2 text-black"
-                />
-                <button
-                  onClick={() => handleEditNote(note.id)}
-                  className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={() => setEditingNoteId(null)}
-                  className="ml-2 rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
-                >
-                  Cancel
-                </button>
-              </>
-            ) : (
-              <>
-                <div className="flex justify-between items-center">
-                  <h2 className="text-lg font-bold">{note.title}</h2>
-                  <div className="flex gap-2">
+      {/* Notes Section */}
+      <div className="w-full max-w-4xl space-y-4">
+        {loading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p className="text-red-500">{error}</p>
+        ) : (
+          notes.map((note) => (
+            <div
+              key={note.id}
+              className="bg-white rounded-md shadow p-4 border hover:shadow-lg"
+            >
+              {editingNoteId === note.id ? (
+                <div>
+                  <input
+                    type="text"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    className="mb-2 w-full border p-2"
+                  />
+                  <textarea
+                    value={editContent}
+                    onChange={(e) => setEditContent(e.target.value)}
+                    className="w-full border p-2"
+                  />
+                  <div className="flex justify-end mt-2">
                     <button
-                      onClick={() => {
-                        setEditingNoteId(note.id)
-                        setEditTitle(note.title)
-                        setEditContent(note.content)
-                      }}
-                      className="text-blue-500 hover:text-blue-700"
+                      onClick={() => enhanceContentWithAI(note.id)}
+                      className="bg-purple-500 text-white px-4 py-2 rounded mr-2 hover:bg-purple-600"
                     >
-                      ✏️
+                      Enhance with AI
                     </button>
                     <button
-                      className="text-red-500 hover:text-red-700"
-                      onClick={() => setNoteToDelete(note)}
+                      onClick={() => handleEditNote(note.id)}
+                      className="bg-green-500 text-white px-4 py-2 rounded mr-2 hover:bg-green-600"
                     >
-                      ❌
+                      Save
+                    </button>
+                    <button
+                      onClick={() => setEditingNoteId(null)}
+                      className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                    >
+                      Cancel
                     </button>
                   </div>
                 </div>
-                <p>{note.content}</p>
-                <p className="text-sm text-gray-500">
-                  Created at: {note.created_at}
-                </p>
-                {note.updated_at && (
+              ) : (
+                <>
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-bold">{note.title}</h2>
+                    <div className="space-x-2">
+                      <button
+                        onClick={() => {
+                          setEditingNoteId(note.id)
+                          setEditTitle(note.title)
+                          setEditContent(note.content)
+                        }}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        onClick={() => setNoteToDelete(note)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        ❌
+                      </button>
+                    </div>
+                  </div>
+                  <p>{note.content}</p>
                   <p className="text-sm text-gray-500">
-                    Updated at: {note.updated_at}
+                    Created: {note.created_at}
                   </p>
-                )}
-              </>
-            )}
-          </div>
-        ))}
+                  {note.updated_at && (
+                    <p className="text-sm text-gray-500">
+                      Updated: {note.updated_at}
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+          ))
+        )}
       </div>
 
       {/* Add Note Modal */}
@@ -273,18 +250,8 @@ export default function Home() {
             />
             <div className="flex justify-between items-center">
               <button
-                onClick={isRecording ? stopRecording : startRecording}
-                className={`rounded px-4 py-2 text-white ${
-                  isRecording
-                    ? "bg-red-500 hover:bg-red-600"
-                    : "bg-green-500 hover:bg-green-600"
-                }`}
-              >
-                {isRecording ? "Stop Recording" : "Start Recording"}
-              </button>
-              <button
                 onClick={handleCreateNote}
-                className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                className="rounded bg-teal-500 px-4 py-2 text-white hover:bg-teal-600"
               >
                 Add Note
               </button>
