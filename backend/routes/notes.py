@@ -16,6 +16,7 @@ def note_serializer(note):
         "updated_at": note.get("updated_at"),
     }
 
+
 # Route to populate the database with initial notes
 @router.post("/populate")
 async def populate_notes():
@@ -26,6 +27,7 @@ async def populate_notes():
     result = await notes_collection.insert_many(initial_notes)
     return {"inserted_ids": [str(_id) for _id in result.inserted_ids]}
 
+
 # Route to fetch all notes
 @router.get("/notes")
 async def get_notes():
@@ -33,6 +35,7 @@ async def get_notes():
     async for note in notes_collection.find():
         notes.append(note_serializer(note))
     return notes
+
 
 # Route to create a new note
 @router.post("/notes")
@@ -45,6 +48,8 @@ async def create_note(note: Note):
     created_note = await notes_collection.find_one({"_id": result.inserted_id})
     return note_serializer(created_note)
 
+
+# Route to update a note
 @router.put("/notes/{note_id}")
 async def update_note(note_id: str, updated_data: Note):
     updated_fields = updated_data.dict(exclude_unset=True)
@@ -60,3 +65,11 @@ async def update_note(note_id: str, updated_data: Note):
     updated_note = await notes_collection.find_one({"_id": ObjectId(note_id)})
     return note_serializer(updated_note)
 
+
+# Route to delete a note
+@router.delete("/notes/{note_id}")
+async def delete_note(note_id: str):
+    result = await notes_collection.delete_one({"_id": ObjectId(note_id)})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Note not found")
+    return {"message": "Note deleted successfully"}

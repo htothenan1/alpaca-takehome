@@ -12,12 +12,13 @@ type Note = {
 }
 
 export default function Home() {
-  const [notes, setNotes] = useState<Note[]>([]) // State for storing multiple notes
+  const [notes, setNotes] = useState<Note[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const [newNoteTitle, setNewNoteTitle] = useState<string>("")
   const [newNoteContent, setNewNoteContent] = useState<string>("")
-  const [editingNoteId, setEditingNoteId] = useState<string | null>(null) // ID of the note being edited
+  const [noteToDelete, setNoteToDelete] = useState<Note | null>(null)
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null)
   const [editTitle, setEditTitle] = useState<string>("")
   const [editContent, setEditContent] = useState<string>("")
 
@@ -88,6 +89,22 @@ export default function Home() {
     }
   }
 
+  // Function to handle deleting a note
+  const handleDeleteNote = async (id: string) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/notes/${id}`, {
+        method: "DELETE",
+      })
+      if (!response.ok) {
+        throw new Error("Failed to delete note")
+      }
+      setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id))
+      setNoteToDelete(null) // Close the popup
+    } catch (err: unknown) {
+      setError((err as Error).message || "Unknown error occurred")
+    }
+  }
+
   // Fetch notes on component mount
   useEffect(() => {
     fetchNotes()
@@ -104,7 +121,7 @@ export default function Home() {
         {notes.map((note) => (
           <div
             key={note.id}
-            className="rounded-md border p-4 shadow-sm hover:shadow-lg"
+            className="relative rounded-md border p-4 shadow-sm hover:shadow-lg"
           >
             {editingNoteId === note.id ? (
               <>
@@ -112,12 +129,12 @@ export default function Home() {
                   type="text"
                   value={editTitle}
                   onChange={(e) => setEditTitle(e.target.value)}
-                  className="mb-2 w-full border p-2"
+                  className="mb-2 w-full border p-2 text-black"
                 />
                 <textarea
                   value={editContent}
                   onChange={(e) => setEditContent(e.target.value)}
-                  className="mb-2 w-full border p-2"
+                  className="mb-2 w-full border p-2 text-black"
                 />
                 <button
                   onClick={() => handleEditNote(note.id)}
@@ -136,16 +153,24 @@ export default function Home() {
               <>
                 <div className="flex justify-between items-center">
                   <h2 className="text-lg font-bold">{note.title}</h2>
-                  <button
-                    onClick={() => {
-                      setEditingNoteId(note.id)
-                      setEditTitle(note.title)
-                      setEditContent(note.content)
-                    }}
-                    className="text-blue-500 hover:text-blue-700"
-                  >
-                    ✏️
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        setEditingNoteId(note.id)
+                        setEditTitle(note.title)
+                        setEditContent(note.content)
+                      }}
+                      className="text-blue-500 hover:text-blue-700"
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      className="text-red-500 hover:text-red-700"
+                      onClick={() => setNoteToDelete(note)} // Set the note to be deleted
+                    >
+                      ❌
+                    </button>
+                  </div>
                 </div>
                 <p>{note.content}</p>
                 <p className="text-sm text-gray-500">
@@ -175,7 +200,7 @@ export default function Home() {
           placeholder="Content"
           value={newNoteContent}
           onChange={(e) => setNewNoteContent(e.target.value)}
-          className="mt-2 block w-full border p-2"
+          className="mt-2 block w-full border p-2 text-black"
         />
         <button
           onClick={handleCreateNote}
@@ -184,6 +209,32 @@ export default function Home() {
           Add Note
         </button>
       </div>
+
+      {/* Delete Confirmation Popup */}
+      {noteToDelete && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="rounded-md bg-white p-6 text-center shadow-lg">
+            <h2 className="text-xl font-bold text-red-500">Are you sure?</h2>
+            <p className="mt-2 text-gray-700">
+              This action is final and cannot be undone.
+            </p>
+            <div className="mt-4 flex justify-center gap-4">
+              <button
+                onClick={() => handleDeleteNote(noteToDelete.id)}
+                className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => setNoteToDelete(null)} // Cancel delete
+                className="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
